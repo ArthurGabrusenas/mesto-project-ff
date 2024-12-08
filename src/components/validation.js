@@ -17,10 +17,8 @@ function setEventListeners(formElement, settingsObject) {
   clearValidation(formElement, buttonElement, inputList, settingsObject);
   inputList.forEach((inputElement) => {
     inputElement.addEventListener("input", () => {
-      if (formElement.closest(".popup_is-opened")) {
-        isValid(formElement, inputElement, settingsObject);
-        toggleButtonState(inputList, buttonElement, settingsObject);
-      }
+      isValid(formElement, inputElement, settingsObject);
+      toggleButtonState(inputList, buttonElement, settingsObject);
     });
   });
 }

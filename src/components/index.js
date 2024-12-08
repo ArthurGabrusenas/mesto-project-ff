@@ -39,6 +39,9 @@ const openedImageCaption = popupImage.querySelector(".popup__caption");
 const profileInputList = Array.from(editProfileForm.querySelectorAll('.popup__input'));
 const newPlaceInputList = Array.from(newPlaceForm.querySelectorAll('.popup__input'));
 const avatarInputList = Array.from(editProfileAvatar.querySelectorAll('.popup__input'));
+const editProfileButtonElement = editProfileForm.querySelector('.popup__button');
+const newPlaceButtonElement = newPlaceForm.querySelector('.popup__button');
+const editProfileAvatarButtonElement = editProfileAvatar.querySelector('.popup__button');
 let userId;
 
 Promise.all([getUserInfo(), getInitialCards()])
@@ -64,28 +67,26 @@ function makeCard(item, userId) {
 function openImage(evt) {
   openModal(popupImage);
   openedImage.src = evt.target.src;
+  openedImage.alt = evt.target.alt;
   openedImageCaption.textContent = evt.target.alt;
 }
 
 profileEditButton.addEventListener("click", () => {
   openModal(popupEdit);
   fillEditModalInputs();
-  const buttonElement = editProfileForm.querySelector('.popup__button');
-  clearValidation(editProfileForm, buttonElement, profileInputList, validationConfig);
+  clearValidation(editProfileForm, editProfileButtonElement, profileInputList, validationConfig);
 });
 
 profileAddButton.addEventListener("click", () => {
   openModal(popupNewCard);
   newPlaceForm.reset();
-  const buttonElement = newPlaceForm.querySelector('.popup__button');
-  clearValidation(newPlaceForm, buttonElement, newPlaceInputList, validationConfig);
+  clearValidation(newPlaceForm, newPlaceButtonElement, newPlaceInputList, validationConfig);
 });
 
 profileImage.addEventListener("click", () => {
   openModal(popupTypeEditAvatar);
   editProfileAvatar.reset();
-  const buttonElement = editProfileAvatar.querySelector('.popup__button');
-  clearValidation(editProfileAvatar, buttonElement, avatarInputList, validationConfig);
+  clearValidation(editProfileAvatar, editProfileAvatarButtonElement, avatarInputList, validationConfig);
 });
 
 popupEdit.addEventListener("click", closeModalByOverlay);
@@ -108,11 +109,13 @@ function handleProfileFormSubmit(evt) {
     .then((result) => {
       profileTitle.textContent = result.name;
       profileDescription.textContent = result.about;
-      submitButton.textContent = "Сохранить";
       closeModal();
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      submitButton.textContent = "Сохранить";
     });
 }
 
@@ -124,21 +127,15 @@ function handleNewPlaceFormSubmit(evt) {
   const newPlaceLinkValue = newPlaceLink.value;
   postNewCard(newPlaceNameValue, newPlaceLinkValue)
     .then((cardInfo) => {
-      const newCardObj = {
-        name: cardInfo.name,
-        link: cardInfo.link,
-        likes: cardInfo.likes,
-        _id: cardInfo._id,
-        owner: cardInfo.owner,
-        createdAt: new Date().toJSON(),
-      };
-      const card = makeCard(newCardObj, userId);
+      const card = makeCard(cardInfo, userId);
       placesList.prepend(card);
-      submitButton.textContent = "Сохранить";
       closeModal();
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      submitButton.textContent = "Сохранить";
     });
 }
 
@@ -150,11 +147,13 @@ function handleEditProfileAvatarSubmit(evt) {
   editAvatar(newAvatarValue)
     .then((res) => {
       profileImage.style.backgroundImage = `url(${res.avatar})`;
-      submitButton.textContent = "Сохранить";
       closeModal();
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      submitButton.textContent = "Сохранить";
     });
 }
 
